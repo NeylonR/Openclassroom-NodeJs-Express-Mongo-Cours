@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const app = express();
+const exoapp = express();
 
 const Product = require('./models/product');
 
@@ -11,16 +11,16 @@ mongoose.connect('mongodb+srv://admin:admin@cluster0.rmm0vg1.mongodb.net/?retryW
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-app.use(express.json());
+exoapp.use(express.json());
 
-app.use((req, res, next) => {
+exoapp.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
 });
 
-app.post('/api/products', (req, res, next) => {
+exoapp.post('/api/products', (req, res, next) => {
     delete req.body._id;
     const product = new Product({
       ...req.body
@@ -30,28 +30,28 @@ app.post('/api/products', (req, res, next) => {
       .catch(error => res.status(400).json({ error }));
 });
 
-app.get('/api/products/:id', (req, res, next) => {
+exoapp.get('/api/products/:id', (req, res, next) => {
     Product.findOne({ _id: req.params.id })
       .then(product => res.status(200).json({ product }))
       .catch(error => res.status(404).json({ error }));
 });
 
-app.get('/api/products', (req, res, next) => {
+exoapp.get('/api/products', (req, res, next) => {
 Product.find()
     .then(products => res.status(200).json({ products }))
     .catch(error => res.status(400).json({ error }));
 });
 
-app.delete('/api/products/:id', (req, res, next) => {
+exoapp.delete('/api/products/:id', (req, res, next) => {
     Product.deleteOne({ _id: req.params.id })
       .then(() => res.status(200).json({ message: 'Deleted!'}))
       .catch(error => res.status(404).json({ error }));
 });
 
-app.put('/api/products/:id', (req, res, next) => {
+exoapp.put('/api/products/:id', (req, res, next) => {
     Product.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
     .then(() => res.status(201).json({ message: 'Modified!'}))
     .catch(error => res.status(400).json({ error }));
 });
 
-module.exports = app;
+module.exports = exoapp;
